@@ -13,6 +13,7 @@ import { useMousePosition } from "../../hooks/use-mouse-position";
 import { useShooting } from "../../hooks/use-shooting";
 import { usePlaneState } from "../../hooks/use-plane-state";
 import { useBulletCounter } from "../../hooks/use-bullet-counter";
+import { usePlanesDestroyed } from "../../hooks/use-planes-destroyed";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -32,6 +33,7 @@ export const GameScene = () => {
   const { planeState, updatePosition, takeDamage, resetPlane } =
     usePlaneState();
   const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
+  const { planesDestroyed, addPlaneDestroyed } = usePlanesDestroyed();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
 
   // Handle plane position updates
@@ -63,6 +65,7 @@ export const GameScene = () => {
     if (planeState.health === 1) {
       // This will be 0 after takeDamage
       setShowDeathExplosion(true);
+      addPlaneDestroyed(); // Increment destroyed planes counter
     }
   };
 
@@ -157,7 +160,11 @@ export const GameScene = () => {
       <CrosshairSprite x={mousePosition.x} y={mousePosition.y} scale={1.2} />
 
       {/* Bullet counter UI - renders on top of all game elements */}
-      <BulletCounter bulletsRemaining={bulletsRemaining} canShoot={canShoot} />
+      <BulletCounter 
+        bulletsRemaining={bulletsRemaining} 
+        canShoot={canShoot} 
+        planesDestroyed={planesDestroyed}
+      />
     </>
   );
 };
