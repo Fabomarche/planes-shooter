@@ -7,7 +7,6 @@ interface CloudSpriteProps {
   x?: number;
   y?: number;
   scale?: number;
-  widthScale?: number; // New parameter for width modification
   speed?: number;
   direction?: 'left' | 'right';
 }
@@ -16,13 +15,12 @@ interface CloudSpriteProps {
  * CloudSprite component following React + Pixi.js best practices
  * - Uses custom hook for asset loading
  * - Implements smooth horizontal movement
- * - Configurable position, scale, width, and speed
+ * - Configurable position, scale, and speed
  */
 export const CloudSprite = ({ 
   x = 0, 
   y = 0, 
   scale = 0.3, 
-  widthScale = 1, // Default width scale
   speed = 0.5,
   direction = 'left'
 }: CloudSpriteProps) => {
@@ -69,8 +67,7 @@ export const CloudSprite = ({
       anchor={0.5}
       x={x}
       y={y}
-      scaleX={scale * widthScale} // Apply width scale to X axis
-      scaleY={scale} // Keep original scale for Y axis
+      scale={scale}
       alpha={0.8} // Slightly transparent for depth effect
     />
   );
