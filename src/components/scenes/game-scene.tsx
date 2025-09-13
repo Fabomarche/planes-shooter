@@ -8,9 +8,11 @@ import {
 } from "../entities/explosion-system";
 import { CollisionDebug } from "../entities/collision-debug";
 import { PlaneDeathExplosion } from "../entities/plane-death-explosion";
+import { BulletCounter } from "../ui/bullet-counter";
 import { useMousePosition } from "../../hooks/use-mouse-position";
 import { useShooting } from "../../hooks/use-shooting";
 import { usePlaneState } from "../../hooks/use-plane-state";
+import { useBulletCounter } from "../../hooks/use-bullet-counter";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -29,6 +31,7 @@ export const GameScene = () => {
   const { handleClick } = useShooting();
   const { planeState, updatePosition, takeDamage, resetPlane } =
     usePlaneState();
+  const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
 
   // Handle plane position updates
@@ -67,6 +70,7 @@ export const GameScene = () => {
   const handleDeathExplosionComplete = () => {
     setShowDeathExplosion(false);
     resetPlane(); // Reset plane for next cycle
+    // Note: Bullet counter is global and doesn't reset with each plane
   };
 
   // Set up click event listener
@@ -75,7 +79,7 @@ export const GameScene = () => {
     if (!canvas) return;
 
     const clickHandler = (event: MouseEvent) => {
-      handleClick(event, createBullet);
+      handleClick(event, createBullet, canShoot, shootBullet);
     };
 
     canvas.addEventListener("click", clickHandler);
@@ -83,7 +87,7 @@ export const GameScene = () => {
     return () => {
       canvas.removeEventListener("click", clickHandler);
     };
-  }, [handleClick, createBullet]);
+  }, [handleClick, createBullet, canShoot, shootBullet]);
 
   return (
     <>
@@ -151,6 +155,9 @@ export const GameScene = () => {
 
       {/* Anti-aircraft cannon crosshair - renders on top of everything */}
       <CrosshairSprite x={mousePosition.x} y={mousePosition.y} scale={1.2} />
+
+      {/* Bullet counter UI - renders on top of all game elements */}
+      <BulletCounter bulletsRemaining={bulletsRemaining} canShoot={canShoot} />
     </>
   );
 };

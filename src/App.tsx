@@ -1,5 +1,5 @@
 import { Application, extend } from "@pixi/react";
-import { Container, Sprite, Graphics } from "pixi.js";
+import { Container, Sprite, Graphics, Text } from "pixi.js";
 import { GameScene } from "./components/scenes/game-scene";
 import { GAME_CONFIG } from "./constants/game-config";
 
@@ -8,6 +8,7 @@ extend({
   Container,
   Sprite,
   Graphics,
+  Text,
 });
 
 /**

@@ -37,6 +37,7 @@ export const GAME_CONFIG = {
     GRAVITY: 400, // pixels per second squared
     LIFETIME: 3000, // milliseconds
     MAX_BULLETS: 50,
+    INITIAL_AMMO: 80, // Initial number of bullets available
   },
 
   // Explosion settings

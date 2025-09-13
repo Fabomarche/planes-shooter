@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useApplication } from "@pixi/react";
 
 interface ShootingHook {
-  handleClick: (event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void) => void;
+  handleClick: (event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean) => void;
 }
 
 /**
@@ -14,8 +14,12 @@ interface ShootingHook {
 export const useShooting = (): ShootingHook => {
   const { app } = useApplication();
 
-  const handleClick = useCallback((event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void) => {
-    if (!app) return;
+  const handleClick = useCallback((event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean) => {
+    if (!app || !canShoot) return;
+
+    // Try to consume a bullet
+    const bulletConsumed = shootBullet();
+    if (!bulletConsumed) return;
 
     // Get canvas bounds
     const canvas = app.view as HTMLCanvasElement;
