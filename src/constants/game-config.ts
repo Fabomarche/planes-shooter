@@ -26,6 +26,16 @@ export const GAME_CONFIG = {
     THICKNESS: 3,
   },
 
+  // Bullet settings
+  BULLET: {
+    SPEED: 800, // pixels per second
+    SIZE: 4,
+    COLOR: 0xffaa00, // orange-yellow
+    GRAVITY: 400, // pixels per second squared
+    LIFETIME: 3000, // milliseconds
+    MAX_BULLETS: 50,
+  },
+
   // Performance settings
   USE_WEBGPU: true,
   FALLBACK_TO_WEBGL: true,

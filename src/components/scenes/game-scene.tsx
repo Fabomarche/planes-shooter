@@ -1,7 +1,10 @@
 import { PlaneSprite } from "../entities/plane-sprite";
 import { CloudSystem } from "../entities/cloud-system";
 import { CrosshairSprite } from "../entities/crosshair-sprite";
+import { BulletSystem, useBulletSystem } from "../entities/bullet-system";
 import { useMousePosition } from "../../hooks/use-mouse-position";
+import { useShooting } from "../../hooks/use-shooting";
+import { useEffect } from "react";
 
 /**
  * Main game scene component
@@ -13,6 +16,24 @@ import { useMousePosition } from "../../hooks/use-mouse-position";
  */
 export const GameScene = () => {
   const mousePosition = useMousePosition();
+  const { bullets, createBullet, removeBullet } = useBulletSystem();
+  const { handleClick } = useShooting();
+
+  // Set up click event listener
+  useEffect(() => {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) return;
+
+    const clickHandler = (event: MouseEvent) => {
+      handleClick(event, createBullet);
+    };
+
+    canvas.addEventListener('click', clickHandler);
+
+    return () => {
+      canvas.removeEventListener('click', clickHandler);
+    };
+  }, [handleClick, createBullet]);
 
   return (
     <>
@@ -38,6 +59,12 @@ export const GameScene = () => {
         maxSpeed={1.0}
         heightCoverage={1.0}
         idPrefix="fg-cloud"
+      />
+
+      {/* Bullet system - renders projectiles with physics */}
+      <BulletSystem
+        bullets={bullets}
+        onRemoveBullet={removeBullet}
       />
 
       {/* Anti-aircraft cannon crosshair - renders on top of everything */}
