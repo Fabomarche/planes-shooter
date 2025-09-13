@@ -9,6 +9,7 @@ export const GAME_CONFIG = {
     PLANE: "/assets/plane.png",
     BUNNY: "/assets/bunny.png",
     CLOUD: "/assets/cloud.png",
+    AIM: "/assets/aim.png",
   },
 
   // Animation settings
@@ -17,6 +18,13 @@ export const GAME_CONFIG = {
   // Cloud settings
   CLOUD_SPEED: 0.5,
   CLOUD_SCALE: 0.3,
+
+  // Crosshair settings
+  CROSSHAIR: {
+    SIZE: 60,
+    COLOR: 0xff0000,
+    THICKNESS: 3,
+  },
 
   // Performance settings
   USE_WEBGPU: true,
