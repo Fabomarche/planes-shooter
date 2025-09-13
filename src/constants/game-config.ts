@@ -10,6 +10,7 @@ export const GAME_CONFIG = {
     BUNNY: "/assets/bunny.png",
     CLOUD: "/assets/cloud.png",
     AIM: "/assets/aim.png",
+    EXPLOSION: "/assets/explotion-1.png",
   },
 
   // Animation settings
@@ -36,9 +37,30 @@ export const GAME_CONFIG = {
     MAX_BULLETS: 50,
   },
 
+  // Explosion settings
+  EXPLOSION: {
+    DURATION: 1000, // milliseconds
+    SCALE: 0.1,
+    MAX_EXPLOSIONS: 10,
+  },
+
+  // Plane settings
+  PLANE: {
+    COLLISION_WIDTH: 800, // Width of collision box
+    COLLISION_HEIGHT: 150, // Height of collision box
+    SCALE: 0.25,
+  },
+
   // Performance settings
   USE_WEBGPU: true,
   FALLBACK_TO_WEBGL: true,
+
+  // Debug settings
+  DEBUG: {
+    SHOW_COLLISION_BOXES: false, // Set to false to hide collision boxes
+    COLLISION_BOX_COLOR: 0xff0000, // Red color for collision boxes
+    COLLISION_BOX_ALPHA: 0.3, // Semi-transparent
+  },
 } as const;
 
 // Game state constants

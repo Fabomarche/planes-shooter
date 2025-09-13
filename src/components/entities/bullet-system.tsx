@@ -14,6 +14,12 @@ interface BulletData {
 interface BulletSystemProps {
   bullets: BulletData[];
   onRemoveBullet: (id: string) => void;
+  onBulletCollision?: (bullet: BulletData, collisionX: number, collisionY: number) => void;
+  planeData?: {
+    x: number;
+    y: number;
+    scale: number;
+  };
 }
 
 /**
@@ -22,7 +28,7 @@ interface BulletSystemProps {
  * - Handles bullet removal
  * - Optimized for performance
  */
-export const BulletSystem = ({ bullets, onRemoveBullet }: BulletSystemProps) => {
+export const BulletSystem = ({ bullets, onRemoveBullet, onBulletCollision, planeData }: BulletSystemProps) => {
   return (
     <>
       {bullets.map((bullet) => (
@@ -30,6 +36,8 @@ export const BulletSystem = ({ bullets, onRemoveBullet }: BulletSystemProps) => 
           key={bullet.id}
           bullet={bullet}
           onRemove={onRemoveBullet}
+          onCollision={onBulletCollision}
+          planeData={planeData}
         />
       ))}
     </>
