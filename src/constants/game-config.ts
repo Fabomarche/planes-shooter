@@ -11,6 +11,8 @@ export const GAME_CONFIG = {
     CLOUD: "/assets/cloud.png",
     AIM: "/assets/aim.png",
     EXPLOSION: "/assets/explotion-1.png",
+    EXPLOSION_2: "/assets/explotion-2.png",
+    EXPLOSION_3: "/assets/explotion-3.png",
   },
 
   // Animation settings
@@ -49,6 +51,10 @@ export const GAME_CONFIG = {
     COLLISION_WIDTH: 800, // Width of collision box
     COLLISION_HEIGHT: 150, // Height of collision box
     SCALE: 0.25,
+    MAX_HEALTH: 4, // Number of hits before destruction
+    DAMAGE_EXPLOSION_SCALE: 0.5, // Scale for damage explosion (explosion-2)
+    DEATH_EXPLOSION_SCALE: 1.0, // Scale for death explosion (explosion-3)
+    DEATH_EXPLOSION_DELAY: 1000, // Delay before death explosion (ms)
   },
 
   // Performance settings

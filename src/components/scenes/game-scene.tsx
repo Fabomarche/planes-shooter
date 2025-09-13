@@ -7,8 +7,10 @@ import {
   useExplosionSystem,
 } from "../entities/explosion-system";
 import { CollisionDebug } from "../entities/collision-debug";
+import { PlaneDeathExplosion } from "../entities/plane-death-explosion";
 import { useMousePosition } from "../../hooks/use-mouse-position";
 import { useShooting } from "../../hooks/use-shooting";
+import { usePlaneState } from "../../hooks/use-plane-state";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -25,11 +27,13 @@ export const GameScene = () => {
   const { bullets, createBullet, removeBullet } = useBulletSystem();
   const { explosions, createExplosion, removeExplosion } = useExplosionSystem();
   const { handleClick } = useShooting();
-  const [planeData, setPlaneData] = useState({ x: 0, y: 0, scale: 0.25 });
+  const { planeState, updatePosition, takeDamage, resetPlane } =
+    usePlaneState();
+  const [showDeathExplosion, setShowDeathExplosion] = useState(false);
 
   // Handle plane position updates
   const handlePlanePositionUpdate = (x: number, y: number, scale: number) => {
-    setPlaneData({ x, y, scale });
+    updatePosition(x, y, scale);
   };
 
   // Handle bullet collision with plane
@@ -38,13 +42,31 @@ export const GameScene = () => {
     collisionX: number,
     collisionY: number,
   ) => {
+    if (!planeState.isAlive) return; // Don't process collisions if plane is dead
+
+    // Create normal explosion
     createExplosion(
       collisionX,
       collisionY,
       "plane-1", // Associate explosion with plane
-      planeData.x, // Plane X position at collision
-      planeData.y, // Plane Y position at collision
+      planeState.position.x, // Plane X position at collision
+      planeState.position.y, // Plane Y position at collision
     );
+
+    // Take damage
+    takeDamage();
+
+    // Check if plane is destroyed
+    if (planeState.health === 1) {
+      // This will be 0 after takeDamage
+      setShowDeathExplosion(true);
+    }
+  };
+
+  // Handle death explosion completion
+  const handleDeathExplosionComplete = () => {
+    setShowDeathExplosion(false);
+    resetPlane(); // Reset plane for next cycle
   };
 
   // Set up click event listener
@@ -76,14 +98,17 @@ export const GameScene = () => {
         idPrefix="bg-cloud"
       />
 
-      <PlaneSprite onPositionUpdate={handlePlanePositionUpdate} />
+      {/* Plane - only show if alive */}
+      {planeState.isAlive && (
+        <PlaneSprite onPositionUpdate={handlePlanePositionUpdate} />
+      )}
 
       {/* Debug collision box for plane */}
-      {GAME_CONFIG.DEBUG.SHOW_COLLISION_BOXES && (
+      {GAME_CONFIG.DEBUG.SHOW_COLLISION_BOXES && planeState.isAlive && (
         <CollisionDebug
-          x={planeData.x}
-          y={planeData.y}
-          scale={planeData.scale}
+          x={planeState.position.x}
+          y={planeState.position.y}
+          scale={planeState.position.scale}
           width={GAME_CONFIG.PLANE.COLLISION_WIDTH}
           height={GAME_CONFIG.PLANE.COLLISION_HEIGHT}
         />
@@ -105,15 +130,24 @@ export const GameScene = () => {
         bullets={bullets}
         onRemoveBullet={removeBullet}
         onBulletCollision={handleBulletCollision}
-        planeData={planeData}
+        planeData={planeState.position}
       />
 
-      {/* Explosion system - renders explosion effects */}
+      {/* Explosion system - renders normal explosion effects */}
       <ExplosionSystem
         explosions={explosions}
         onRemoveExplosion={removeExplosion}
-        planeData={planeData}
+        planeData={planeState.position}
       />
+
+      {/* Death explosion sequence - renders on top of normal explosions */}
+      {showDeathExplosion && (
+        <PlaneDeathExplosion
+          x={planeState.position.x}
+          y={planeState.position.y}
+          onComplete={handleDeathExplosionComplete}
+        />
+      )}
 
       {/* Anti-aircraft cannon crosshair - renders on top of everything */}
       <CrosshairSprite x={mousePosition.x} y={mousePosition.y} scale={1.2} />
