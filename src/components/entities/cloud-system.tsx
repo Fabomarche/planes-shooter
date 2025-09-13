@@ -11,12 +11,31 @@ interface CloudData {
   direction: 'left' | 'right';
 }
 
+interface CloudSystemProps {
+  cloudCount?: number;
+  minScale?: number;
+  maxScale?: number;
+  minSpeed?: number;
+  maxSpeed?: number;
+  heightCoverage?: number; // Percentage of screen height to cover
+  idPrefix?: string; // Prefix for cloud IDs to avoid conflicts
+}
+
 /**
  * CloudSystem component for managing multiple clouds
  * - Generates random cloud positions and properties
+ * - Configurable scale, speed, and coverage for different effects
  * - Optimized for performance with useMemo
  */
-export const CloudSystem = ({ cloudCount = 8 }: { cloudCount?: number }) => {
+export const CloudSystem = ({ 
+  cloudCount = 8,
+  minScale = 0.2,
+  maxScale = 0.5,
+  minSpeed = 0.2,
+  maxSpeed = 1.0,
+  heightCoverage = 1.0,
+  idPrefix = "cloud"
+}: CloudSystemProps) => {
   const { app } = useApplication();
 
   const clouds = useMemo(() => {
@@ -24,17 +43,17 @@ export const CloudSystem = ({ cloudCount = 8 }: { cloudCount?: number }) => {
     
     for (let i = 0; i < cloudCount; i++) {
       cloudData.push({
-        id: `cloud-${i}`,
+        id: `${idPrefix}-${i}`,
         x: Math.random() * app.screen.width,
-        y: Math.random() * app.screen.height * 1, // % of screen
-        scale: 0.2 + Math.random() * 0.3, // Scale between 0.2 and 0.5
-        speed: 0.2 + Math.random() * 0.8, // Speed between 0.2 and 1.0
+        y: Math.random() * app.screen.height * heightCoverage,
+        scale: minScale + Math.random() * (maxScale - minScale),
+        speed: minSpeed + Math.random() * (maxSpeed - minSpeed),
         direction: Math.random() > 0.5 ? 'left' : 'right',
       });
     }
     
     return cloudData;
-  }, [cloudCount, app.screen.width, app.screen.height]);
+  }, [cloudCount, minScale, maxScale, minSpeed, maxSpeed, heightCoverage, idPrefix, app.screen.width, app.screen.height]);
 
   return (
     <>
