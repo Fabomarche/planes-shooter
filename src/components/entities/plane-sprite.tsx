@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useApplication, useTick } from "@pixi/react";
-import { Sprite } from "pixi.js";
+import { Sprite, ColorMatrixFilter } from "pixi.js";
 import { useAsset } from "../../hooks/use-asset";
 import { usePlaneAudio } from "../../hooks/use-plane-audio";
 
@@ -23,12 +23,21 @@ export const PlaneSprite = ({ onPositionUpdate, isDestroyed = false }: PlaneSpri
   const [endY, setEndY] = useState<number>(0);
   const [currentRotation, setCurrentRotation] = useState<number>(0.5);
   const [hasStartedAudio, setHasStartedAudio] = useState<boolean>(false);
+  const [hueValue, setHueValue] = useState<number>(0);
+
 
   // Use custom hook for asset loading with proper error handling
   const { texture, isLoading, error } = useAsset("PLANE");
   
   // Use custom hook for plane audio management
   const { playPlaneSound, stopPlaneSound, fadeOutPlaneSound, resetPlaneSound } = usePlaneAudio();
+
+  // Create hue shift filter with memoization
+  const hueShiftFilter = useMemo(() => {
+    const filter = new ColorMatrixFilter();
+    filter.hue(hueValue, false);
+    return filter;
+  }, [hueValue]);
 
   // Handle audio when plane is destroyed
   useEffect(() => {
@@ -59,6 +68,10 @@ export const PlaneSprite = ({ onPositionUpdate, isDestroyed = false }: PlaneSpri
       const deltaX = app.screen.width + 200; // Total horizontal distance
       const angle = Math.atan2(deltaY, deltaX);
       setCurrentRotation(0.5 + angle); // Add angle to baseline rotation
+      
+      // Generate random hue value (0-360 degrees)
+      const randomHue = Math.random() * 360;
+      setHueValue(randomHue);
       
       // Reset audio state for new plane cycle
       setHasStartedAudio(false);
@@ -144,6 +157,7 @@ export const PlaneSprite = ({ onPositionUpdate, isDestroyed = false }: PlaneSpri
       y={startY}
       scale={0.25}
       rotation={currentRotation}
+      filters={[hueShiftFilter]}
     />
   );
 };
