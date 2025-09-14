@@ -83,7 +83,7 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
 
   // Start background music
   const playBackgroundMusic = useCallback(() => {
-    if (audioSettings.isMusicMuted) return;
+    if (audioSettings.isMusicMuted || !audioSettings.isAudioActivated) return;
     
     initializeAudio();
     setupEventListeners();
@@ -104,7 +104,7 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
         });
       }
     }
-  }, [initializeAudio, setupEventListeners, audioSettings.isMusicMuted]);
+  }, [initializeAudio, setupEventListeners, audioSettings.isMusicMuted, audioSettings.isAudioActivated]);
 
   // Stop background music
   const stopBackgroundMusic = useCallback(() => {
@@ -143,7 +143,7 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
 
   // Resume background music
   const resumeBackgroundMusic = useCallback(() => {
-    if (audioSettings.isMusicMuted) return;
+    if (audioSettings.isMusicMuted || !audioSettings.isAudioActivated) return;
     
     if (isPlayingRef.current && isPausedRef.current) {
       isPausedRef.current = false;
@@ -156,7 +156,7 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
         });
       }
     }
-  }, [audioSettings.isMusicMuted]);
+  }, [audioSettings.isMusicMuted, audioSettings.isAudioActivated]);
 
   // Set volume for background music
   const setVolume = useCallback((volume: number) => {
@@ -170,6 +170,24 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
       loop2Ref.current.volume = volumeRef.current;
     }
   }, []);
+
+  // Monitor audio settings changes to pause/resume music
+  useEffect(() => {
+    if (audioSettings.isMusicMuted && isPlayingRef.current) {
+      // Music was muted, pause it
+      pauseBackgroundMusic();
+    } else if (!audioSettings.isMusicMuted && isPausedRef.current) {
+      // Music was unmuted, resume it
+      resumeBackgroundMusic();
+    }
+  }, [audioSettings.isMusicMuted, pauseBackgroundMusic, resumeBackgroundMusic]);
+
+  // Start music when audio is activated
+  useEffect(() => {
+    if (audioSettings.isAudioActivated && !audioSettings.isMusicMuted && !isPlayingRef.current) {
+      playBackgroundMusic();
+    }
+  }, [audioSettings.isAudioActivated, audioSettings.isMusicMuted, playBackgroundMusic]);
 
   // Cleanup on unmount
   useEffect(() => {

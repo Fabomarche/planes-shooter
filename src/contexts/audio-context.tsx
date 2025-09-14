@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 interface AudioSettings {
   isMusicMuted: boolean;
   isFxMuted: boolean;
+  isAudioActivated: boolean;
 }
 
 interface AudioContextType {
@@ -11,6 +12,7 @@ interface AudioContextType {
   toggleFxMute: () => void;
   setMusicMuted: (muted: boolean) => void;
   setFxMuted: (muted: boolean) => void;
+  activateAudio: () => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({ children }) => {
   const [audioSettings, setAudioSettings] = useState<AudioSettings>({
     isMusicMuted: false,
     isFxMuted: false,
+    isAudioActivated: false, // Audio needs user interaction to activate
   });
 
   const toggleMusicMute = useCallback(() => {
@@ -53,12 +56,20 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({ children }) => {
     }));
   }, []);
 
+  const activateAudio = useCallback(() => {
+    setAudioSettings(prev => ({
+      ...prev,
+      isAudioActivated: true,
+    }));
+  }, []);
+
   const value: AudioContextType = {
     audioSettings,
     toggleMusicMute,
     toggleFxMute,
     setMusicMuted,
     setFxMuted,
+    activateAudio,
   };
 
   return (

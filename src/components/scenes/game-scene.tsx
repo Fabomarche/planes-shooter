@@ -16,6 +16,8 @@ import { useBulletCounter } from "../../hooks/use-bullet-counter";
 import { usePlanesDestroyed } from "../../hooks/use-planes-destroyed";
 import { useSound } from "../../hooks/use-sound";
 import { useBackgroundMusic } from "../../hooks/use-background-music";
+import { useAudioSettings } from "../../contexts/audio-context";
+import { AudioActivationPrompt } from "../ui/audio-activation-prompt";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -36,8 +38,10 @@ export const GameScene = () => {
     usePlaneState();
   const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
   const { planesDestroyed, addPlaneDestroyed } = usePlanesDestroyed();
-  const { playShootSound, playExplosion2Sound, playExplosion3Sound } = useSound();
-  const { playBackgroundMusic, stopBackgroundMusic, setVolume } = useBackgroundMusic();
+  const { playShootSound, playExplosion2Sound, playExplosion3Sound } =
+    useSound();
+  const { stopBackgroundMusic, setVolume } = useBackgroundMusic();
+  const { audioSettings, activateAudio } = useAudioSettings();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
 
   // Handle plane position updates
@@ -80,15 +84,13 @@ export const GameScene = () => {
     // Note: Bullet counter is global and doesn't reset with each plane
   };
 
-  // Start background music when game starts
+  // Initialize audio settings
   useEffect(() => {
-    playBackgroundMusic();
-    setVolume(0.3); // Set background music volume to 30%
-
+    setVolume(0.3);
     return () => {
       stopBackgroundMusic();
     };
-  }, [playBackgroundMusic, stopBackgroundMusic, setVolume]);
+  }, [setVolume, stopBackgroundMusic]);
 
   // Set up click event listener
   useEffect(() => {
@@ -121,8 +123,8 @@ export const GameScene = () => {
 
       {/* Plane - only show if alive */}
       {planeState.isAlive && (
-        <PlaneSprite 
-          onPositionUpdate={handlePlanePositionUpdate} 
+        <PlaneSprite
+          onPositionUpdate={handlePlanePositionUpdate}
           isDestroyed={planeState.isDestroyed}
         />
       )}
@@ -179,11 +181,22 @@ export const GameScene = () => {
       <CrosshairSprite x={mousePosition.x} y={mousePosition.y} scale={1.2} />
 
       {/* Bullet counter UI - renders on top of all game elements */}
-      <BulletCounter 
-        bulletsRemaining={bulletsRemaining} 
-        canShoot={canShoot} 
+      <BulletCounter
+        bulletsRemaining={bulletsRemaining}
+        canShoot={canShoot}
         planesDestroyed={planesDestroyed}
       />
+
+      {/* Audio activation prompt - shows when audio is not activated */}
+      {!audioSettings.isAudioActivated && (
+        <AudioActivationPrompt
+          x={window.innerWidth / 2 - 150}
+          y={window.innerHeight / 2 - 75}
+          width={300}
+          height={150}
+          onActivate={activateAudio}
+        />
+      )}
     </>
   );
 };
