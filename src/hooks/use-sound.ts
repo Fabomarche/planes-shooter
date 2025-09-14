@@ -3,6 +3,7 @@ import { useAudioSettings } from '../contexts/audio-context';
 
 interface SoundHook {
   playShootSound: () => void;
+  playEmptyBulletsSound: () => void;
   playExplosion2Sound: () => void;
   playExplosion3Sound: () => void;
   setVolume: (volume: number) => void;
@@ -17,6 +18,7 @@ interface SoundHook {
 export const useSound = (): SoundHook => {
   const { audioSettings } = useAudioSettings();
   const shootSoundRef = useRef<HTMLAudioElement | null>(null);
+  const emptyBulletsSoundRef = useRef<HTMLAudioElement | null>(null);
   const explosion2SoundRef = useRef<HTMLAudioElement | null>(null);
   const explosion3SoundRef = useRef<HTMLAudioElement | null>(null);
   const volumeRef = useRef<number>(0.5); // Default volume 50%
@@ -27,6 +29,12 @@ export const useSound = (): SoundHook => {
       shootSoundRef.current = new Audio('/assets/shot.mp3');
       shootSoundRef.current.preload = 'auto';
       shootSoundRef.current.volume = volumeRef.current;
+    }
+
+    if (!emptyBulletsSoundRef.current) {
+      emptyBulletsSoundRef.current = new Audio('/assets/empty-bullets.mp3');
+      emptyBulletsSoundRef.current.preload = 'auto';
+      emptyBulletsSoundRef.current.volume = volumeRef.current;
     }
     
     if (!explosion2SoundRef.current) {
@@ -53,6 +61,20 @@ export const useSound = (): SoundHook => {
       shootSoundRef.current.currentTime = 1.0;
       shootSoundRef.current.play().catch((error) => {
         console.warn('Could not play shoot sound:', error);
+      });
+    }
+  }, [initializeSounds, audioSettings.isFxMuted]);
+
+  // Play empty bullets sound
+  const playEmptyBulletsSound = useCallback(() => {
+    if (audioSettings.isFxMuted) return;
+    
+    initializeSounds();
+    
+    if (emptyBulletsSoundRef.current) {
+      emptyBulletsSoundRef.current.currentTime = 0;
+      emptyBulletsSoundRef.current.play().catch((error) => {
+        console.warn('Could not play empty bullets sound:', error);
       });
     }
   }, [initializeSounds, audioSettings.isFxMuted]);
@@ -92,6 +114,9 @@ export const useSound = (): SoundHook => {
     if (shootSoundRef.current) {
       shootSoundRef.current.volume = volumeRef.current;
     }
+    if (emptyBulletsSoundRef.current) {
+      emptyBulletsSoundRef.current.volume = volumeRef.current;
+    }
     if (explosion2SoundRef.current) {
       explosion2SoundRef.current.volume = volumeRef.current;
     }
@@ -102,6 +127,7 @@ export const useSound = (): SoundHook => {
 
   return {
     playShootSound,
+    playEmptyBulletsSound,
     playExplosion2Sound,
     playExplosion3Sound,
     setVolume,

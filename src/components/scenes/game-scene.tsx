@@ -38,7 +38,7 @@ export const GameScene = () => {
     usePlaneState();
   const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
   const { planesDestroyed, addPlaneDestroyed } = usePlanesDestroyed();
-  const { playShootSound, playExplosion2Sound, playExplosion3Sound } =
+  const { playShootSound, playEmptyBulletsSound, playExplosion2Sound, playExplosion3Sound } =
     useSound();
   const { stopBackgroundMusic, setVolume } = useBackgroundMusic();
   const { audioSettings, activateAudio } = useAudioSettings();
@@ -98,7 +98,7 @@ export const GameScene = () => {
     if (!canvas) return;
 
     const clickHandler = (event: MouseEvent) => {
-      handleClick(event, createBullet, canShoot, shootBullet, playShootSound);
+      handleClick(event, createBullet, canShoot, shootBullet, playShootSound, playEmptyBulletsSound);
     };
 
     canvas.addEventListener("click", clickHandler);
@@ -106,7 +106,7 @@ export const GameScene = () => {
     return () => {
       canvas.removeEventListener("click", clickHandler);
     };
-  }, [handleClick, createBullet, canShoot, shootBullet, playShootSound]);
+  }, [handleClick, createBullet, canShoot, shootBullet, playShootSound, playEmptyBulletsSound]);
 
   return (
     <>

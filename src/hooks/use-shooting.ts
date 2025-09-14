@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useApplication } from "@pixi/react";
 
 interface ShootingHook {
-  handleClick: (event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean, playShootSound: () => void) => void;
+  handleClick: (event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean, playShootSound: () => void, playEmptyBulletsSound: () => void) => void;
 }
 
 /**
@@ -10,19 +10,29 @@ interface ShootingHook {
  * - Detects mouse clicks
  * - Calculates bullet trajectory from cannon to target
  * - Integrates with bullet system
- * - Plays shoot sound on successful shot
+ * - Plays appropriate sound based on ammo availability
  */
 export const useShooting = (): ShootingHook => {
   const { app } = useApplication();
 
-  const handleClick = useCallback((event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean, playShootSound: () => void) => {
-    if (!app || !canShoot) return;
+  const handleClick = useCallback((event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean, playShootSound: () => void, playEmptyBulletsSound: () => void) => {
+    if (!app) return;
+
+    if (!canShoot) {
+      // Play empty bullets sound when trying to shoot without ammo
+      playEmptyBulletsSound();
+      return;
+    }
 
     // Try to consume a bullet
     const bulletConsumed = shootBullet();
-    if (!bulletConsumed) return;
+    if (!bulletConsumed) {
+      // Play empty bullets sound if bullet consumption failed
+      playEmptyBulletsSound();
+      return;
+    }
 
-    // Play shoot sound
+    // Play shoot sound for successful shot
     playShootSound();
 
     // Get canvas bounds
