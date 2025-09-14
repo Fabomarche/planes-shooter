@@ -7,6 +7,7 @@ interface PlaneDeathExplosionProps {
   x: number;
   y: number;
   onComplete: () => void;
+  playExplosion3Sound?: () => void;
 }
 
 /**
@@ -20,6 +21,7 @@ export const PlaneDeathExplosion = ({
   x,
   y,
   onComplete,
+  playExplosion3Sound,
 }: PlaneDeathExplosionProps) => {
   const { texture: explosion2Texture, isLoading: loading2 } =
     useAsset("EXPLOSION_2");
@@ -38,10 +40,15 @@ export const PlaneDeathExplosion = ({
       setShowExplosion2(false);
       setShowExplosion3(true);
       setExplosion3StartTime(Date.now());
+      
+      // Play explosion-3 sound when explosion-3 starts
+      if (playExplosion3Sound) {
+        playExplosion3Sound();
+      }
     }, 100); // Very short delay
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [playExplosion3Sound]);
 
   useTick(() => {
     // Handle explosion 3 fade-in and fade-out animation

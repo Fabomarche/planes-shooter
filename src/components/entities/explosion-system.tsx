@@ -20,6 +20,7 @@ interface ExplosionSystemProps {
     y: number;
     scale: number;
   };
+  playExplosion2Sound?: () => void;
 }
 
 /**
@@ -28,7 +29,7 @@ interface ExplosionSystemProps {
  * - Handles explosion removal
  * - Optimized for performance
  */
-export const ExplosionSystem = ({ explosions, onRemoveExplosion, planeData }: ExplosionSystemProps) => {
+export const ExplosionSystem = ({ explosions, onRemoveExplosion, planeData, playExplosion2Sound }: ExplosionSystemProps) => {
   return (
     <>
       {explosions.map((explosion) => (
@@ -37,6 +38,7 @@ export const ExplosionSystem = ({ explosions, onRemoveExplosion, planeData }: Ex
           explosion={explosion}
           onRemove={onRemoveExplosion}
           planeData={planeData}
+          playExplosion2Sound={playExplosion2Sound}
         />
       ))}
     </>

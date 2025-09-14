@@ -14,6 +14,7 @@ import { useShooting } from "../../hooks/use-shooting";
 import { usePlaneState } from "../../hooks/use-plane-state";
 import { useBulletCounter } from "../../hooks/use-bullet-counter";
 import { usePlanesDestroyed } from "../../hooks/use-planes-destroyed";
+import { useSound } from "../../hooks/use-sound";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -34,6 +35,7 @@ export const GameScene = () => {
     usePlaneState();
   const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
   const { planesDestroyed, addPlaneDestroyed } = usePlanesDestroyed();
+  const { playShootSound, playExplosion2Sound, playExplosion3Sound } = useSound();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
 
   // Handle plane position updates
@@ -82,7 +84,7 @@ export const GameScene = () => {
     if (!canvas) return;
 
     const clickHandler = (event: MouseEvent) => {
-      handleClick(event, createBullet, canShoot, shootBullet);
+      handleClick(event, createBullet, canShoot, shootBullet, playShootSound);
     };
 
     canvas.addEventListener("click", clickHandler);
@@ -90,7 +92,7 @@ export const GameScene = () => {
     return () => {
       canvas.removeEventListener("click", clickHandler);
     };
-  }, [handleClick, createBullet, canShoot, shootBullet]);
+  }, [handleClick, createBullet, canShoot, shootBullet, playShootSound]);
 
   return (
     <>
@@ -145,6 +147,7 @@ export const GameScene = () => {
         explosions={explosions}
         onRemoveExplosion={removeExplosion}
         planeData={planeState.position}
+        playExplosion2Sound={playExplosion2Sound}
       />
 
       {/* Death explosion sequence - renders on top of normal explosions */}
@@ -153,6 +156,7 @@ export const GameScene = () => {
           x={planeState.position.x}
           y={planeState.position.y}
           onComplete={handleDeathExplosionComplete}
+          playExplosion3Sound={playExplosion3Sound}
         />
       )}
 

@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useApplication } from "@pixi/react";
 
 interface ShootingHook {
-  handleClick: (event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean) => void;
+  handleClick: (event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean, playShootSound: () => void) => void;
 }
 
 /**
@@ -10,16 +10,20 @@ interface ShootingHook {
  * - Detects mouse clicks
  * - Calculates bullet trajectory from cannon to target
  * - Integrates with bullet system
+ * - Plays shoot sound on successful shot
  */
 export const useShooting = (): ShootingHook => {
   const { app } = useApplication();
 
-  const handleClick = useCallback((event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean) => {
+  const handleClick = useCallback((event: MouseEvent, createBullet: (startX: number, startY: number, targetX: number, targetY: number) => void, canShoot: boolean, shootBullet: () => boolean, playShootSound: () => void) => {
     if (!app || !canShoot) return;
 
     // Try to consume a bullet
     const bulletConsumed = shootBullet();
     if (!bulletConsumed) return;
+
+    // Play shoot sound
+    playShootSound();
 
     // Get canvas bounds
     const canvas = app.view as HTMLCanvasElement;

@@ -21,6 +21,7 @@ interface ExplosionSpriteProps {
     y: number;
     scale: number;
   };
+  playExplosion2Sound?: () => void;
 }
 
 /**
@@ -29,17 +30,22 @@ interface ExplosionSpriteProps {
  * - Auto-removes after duration
  * - Uses proper scale and positioning
  */
-export const ExplosionSprite = ({ explosion, onRemove, planeData }: ExplosionSpriteProps) => {
+export const ExplosionSprite = ({ explosion, onRemove, planeData, playExplosion2Sound }: ExplosionSpriteProps) => {
   const { texture, isLoading, error } = useAsset("EXPLOSION");
   const [currentPosition, setCurrentPosition] = useState({ x: explosion.x, y: explosion.y });
 
   useEffect(() => {
+    // Play explosion-2 sound when explosion is created
+    if (playExplosion2Sound) {
+      playExplosion2Sound();
+    }
+
     const timer = setTimeout(() => {
       onRemove(explosion.id);
     }, GAME_CONFIG.EXPLOSION.DURATION);
 
     return () => clearTimeout(timer);
-  }, [explosion.id, onRemove]);
+  }, [explosion.id, onRemove, playExplosion2Sound]);
 
   // Update position every frame to follow the plane
   useTick(() => {
