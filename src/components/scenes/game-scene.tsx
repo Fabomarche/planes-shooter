@@ -15,6 +15,7 @@ import { usePlaneState } from "../../hooks/use-plane-state";
 import { useBulletCounter } from "../../hooks/use-bullet-counter";
 import { usePlanesDestroyed } from "../../hooks/use-planes-destroyed";
 import { useSound } from "../../hooks/use-sound";
+import { useBackgroundMusic } from "../../hooks/use-background-music";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -36,6 +37,7 @@ export const GameScene = () => {
   const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
   const { planesDestroyed, addPlaneDestroyed } = usePlanesDestroyed();
   const { playShootSound, playExplosion2Sound, playExplosion3Sound } = useSound();
+  const { playBackgroundMusic, stopBackgroundMusic, setVolume } = useBackgroundMusic();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
 
   // Handle plane position updates
@@ -77,6 +79,16 @@ export const GameScene = () => {
     resetPlane(); // Reset plane for next cycle
     // Note: Bullet counter is global and doesn't reset with each plane
   };
+
+  // Start background music when game starts
+  useEffect(() => {
+    playBackgroundMusic();
+    setVolume(0.3); // Set background music volume to 30%
+
+    return () => {
+      stopBackgroundMusic();
+    };
+  }, [playBackgroundMusic, stopBackgroundMusic, setVolume]);
 
   // Set up click event listener
   useEffect(() => {

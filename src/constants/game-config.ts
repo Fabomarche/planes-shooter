@@ -13,6 +13,8 @@ export const GAME_CONFIG = {
     EXPLOSION: "/assets/explotion-1.png",
     EXPLOSION_2: "/assets/explotion-2.png",
     EXPLOSION_3: "/assets/explotion-3.png",
+    MUSIC_LOOP_1: "/assets/music-loop-1.mp3",
+    MUSIC_LOOP_2: "/assets/music-loop-2.mp3",
   },
 
   // Animation settings
