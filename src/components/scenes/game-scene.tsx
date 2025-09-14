@@ -17,6 +17,7 @@ import { usePlanesDestroyed } from "../../hooks/use-planes-destroyed";
 import { useSound } from "../../hooks/use-sound";
 import { useBackgroundMusic } from "../../hooks/use-background-music";
 import { useAudioSettings } from "../../contexts/audio-context";
+import { useCrosshairRecoil } from "../../hooks/use-crosshair-recoil";
 import { AudioActivationPrompt } from "../ui/audio-activation-prompt";
 import { GameOverModal } from "../ui/game-over-modal";
 import { useGameOver } from "../../hooks/use-game-over";
@@ -45,6 +46,9 @@ export const GameScene = () => {
   const { stopBackgroundMusic, setVolume } = useBackgroundMusic();
   const { audioSettings, activateAudio } = useAudioSettings();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
+  
+  // Crosshair recoil hook
+  const { recoilOffset, triggerRecoil } = useCrosshairRecoil(bulletsRemaining);
 
   // Game over hook
   const { isGameOver, resetGame } = useGameOver(
@@ -110,6 +114,9 @@ export const GameScene = () => {
     if (!canvas) return;
 
     const clickHandler = (event: MouseEvent) => {
+      // Trigger crosshair recoil before handling the shot
+      triggerRecoil();
+      
       handleClick(event, createBullet, canShoot, shootBullet, playShootSound, playEmptyBulletsSound);
     };
 
@@ -118,7 +125,7 @@ export const GameScene = () => {
     return () => {
       canvas.removeEventListener("click", clickHandler);
     };
-  }, [handleClick, createBullet, canShoot, shootBullet, playShootSound, playEmptyBulletsSound]);
+  }, [handleClick, createBullet, canShoot, shootBullet, playShootSound, playEmptyBulletsSound, triggerRecoil]);
 
   return (
     <>
@@ -190,7 +197,12 @@ export const GameScene = () => {
       )}
 
       {/* Anti-aircraft cannon crosshair - renders on top of everything */}
-      <CrosshairSprite x={mousePosition.x} y={mousePosition.y} scale={1.2} />
+      <CrosshairSprite 
+        x={mousePosition.x} 
+        y={mousePosition.y} 
+        scale={1.2} 
+        recoilOffset={recoilOffset}
+      />
 
       {/* Bullet counter UI - renders on top of all game elements */}
       <BulletCounter

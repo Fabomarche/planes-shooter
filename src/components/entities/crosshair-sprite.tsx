@@ -6,15 +6,17 @@ interface CrosshairSpriteProps {
   x: number;
   y: number;
   scale?: number;
+  recoilOffset?: { x: number; y: number };
 }
 
 /**
  * CrosshairSprite component for anti-aircraft cannon crosshair
  * - Follows mouse cursor position
  * - Uses aim.png image asset
+ * - Includes realistic recoil animation when shooting
  * - Optimized for performance
  */
-export const CrosshairSprite = ({ x, y, scale = 1 }: CrosshairSpriteProps) => {
+export const CrosshairSprite = ({ x, y, scale = 1, recoilOffset = { x: 0, y: 0 } }: CrosshairSpriteProps) => {
   const spriteRef = useRef<Sprite>(null);
 
   // Use custom hook for asset loading with proper error handling
@@ -39,8 +41,8 @@ export const CrosshairSprite = ({ x, y, scale = 1 }: CrosshairSpriteProps) => {
       ref={spriteRef}
       texture={texture}
       anchor={0.5}
-      x={x}
-      y={y}
+      x={x + recoilOffset.x}
+      y={y + recoilOffset.y}
       scale={scale}
       zIndex={1000}
       interactive={false}
