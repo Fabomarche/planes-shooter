@@ -18,6 +18,8 @@ import { useSound } from "../../hooks/use-sound";
 import { useBackgroundMusic } from "../../hooks/use-background-music";
 import { useAudioSettings } from "../../contexts/audio-context";
 import { AudioActivationPrompt } from "../ui/audio-activation-prompt";
+import { GameOverModal } from "../ui/game-over-modal";
+import { useGameOver } from "../../hooks/use-game-over";
 import { useEffect, useState } from "react";
 import { GAME_CONFIG } from "../../constants/game-config";
 
@@ -31,18 +33,28 @@ import { GAME_CONFIG } from "../../constants/game-config";
  */
 export const GameScene = () => {
   const mousePosition = useMousePosition();
-  const { bullets, createBullet, removeBullet } = useBulletSystem();
-  const { explosions, createExplosion, removeExplosion } = useExplosionSystem();
+  const { bullets, createBullet, removeBullet, clearAllBullets } = useBulletSystem();
+  const { explosions, createExplosion, removeExplosion, clearAllExplosions } = useExplosionSystem();
   const { handleClick } = useShooting();
   const { planeState, updatePosition, takeDamage, resetPlane } =
     usePlaneState();
-  const { bulletsRemaining, canShoot, shootBullet } = useBulletCounter();
-  const { planesDestroyed, addPlaneDestroyed } = usePlanesDestroyed();
+  const { bulletsRemaining, canShoot, shootBullet, resetBullets } = useBulletCounter();
+  const { planesDestroyed, addPlaneDestroyed, resetPlanesDestroyed } = usePlanesDestroyed();
   const { playShootSound, playEmptyBulletsSound, playExplosion2Sound, playExplosion3Sound } =
     useSound();
   const { stopBackgroundMusic, setVolume } = useBackgroundMusic();
   const { audioSettings, activateAudio } = useAudioSettings();
   const [showDeathExplosion, setShowDeathExplosion] = useState(false);
+
+  // Game over hook
+  const { isGameOver, resetGame } = useGameOver(
+    bulletsRemaining,
+    resetBullets,
+    resetPlanesDestroyed,
+    resetPlane,
+    clearAllBullets,
+    clearAllExplosions
+  );
 
   // Handle plane position updates
   const handlePlanePositionUpdate = (x: number, y: number, scale: number) => {
@@ -195,6 +207,18 @@ export const GameScene = () => {
           width={300}
           height={150}
           onActivate={activateAudio}
+        />
+      )}
+
+      {/* Game Over Modal - shows when bullets run out */}
+      {isGameOver && (
+        <GameOverModal
+          x={window.innerWidth / 2 - 200}
+          y={window.innerHeight / 2 - 150}
+          width={400}
+          height={300}
+          planesDestroyed={planesDestroyed}
+          onRestart={resetGame}
         />
       )}
     </>
