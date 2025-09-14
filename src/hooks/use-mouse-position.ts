@@ -31,7 +31,7 @@ export const useMousePosition = (): MousePosition => {
 
     const handleMouseMove = (event: MouseEvent) => {
       // Fallback to DOM events if Pixi.js events don't work
-      const canvas = app.view as HTMLCanvasElement;
+      const canvas = app.canvas as HTMLCanvasElement;
       if (!canvas) return;
       
       const rect = canvas.getBoundingClientRect();
@@ -48,7 +48,7 @@ export const useMousePosition = (): MousePosition => {
     }
 
     // Add DOM event listener as fallback
-    const canvas = app.view as HTMLCanvasElement;
+    const canvas = app.canvas as HTMLCanvasElement;
     if (canvas) {
       canvas.addEventListener('mousemove', handleMouseMove);
     }

@@ -24,17 +24,19 @@ export const ConfigModal: React.FC<ConfigModalProps> = ({
       g.clear();
 
       // Modal background - dark military style
-      g.beginFill(0x000000, 0.9);
-      g.drawRoundedRect(0, 0, width, height, 8);
-      g.endFill();
+      g.fill({ color: 0x000000, alpha: 0.9 });
+      g.roundRect(0, 0, width, height, 8);
+      g.fill();
 
       // Border - military green
-      g.lineStyle(3, 0x00ff00);
-      g.drawRoundedRect(0, 0, width, height, 8);
+      g.setStrokeStyle({ width: 3, color: 0x00ff00 });
+      g.roundRect(0, 0, width, height, 8);
+      g.stroke();
 
       // Inner border for depth
-      g.lineStyle(1, 0x004400);
-      g.drawRoundedRect(2, 2, width - 4, height - 4, 6);
+      g.setStrokeStyle({ width: 1, color: 0x004400 });
+      g.roundRect(2, 2, width - 4, height - 4, 6);
+      g.stroke();
     },
     [width, height],
   );
@@ -43,22 +45,24 @@ export const ConfigModal: React.FC<ConfigModalProps> = ({
     g.clear();
 
     // Toggle background - always dark
-    g.beginFill(0x333333);
-    g.drawRoundedRect(0, 0, 60, 30, 15);
-    g.endFill();
+    g.fill({ color: 0x333333 });
+    g.roundRect(0, 0, 60, 30, 15);
+    g.fill();
 
     // Toggle border - green when active, red when inactive
-    g.lineStyle(2, isActive ? 0x00aa00 : 0xaa0000);
-    g.drawRoundedRect(0, 0, 60, 30, 15);
+    g.setStrokeStyle({ width: 2, color: isActive ? 0x00aa00 : 0xaa0000 });
+    g.roundRect(0, 0, 60, 30, 15);
+    g.stroke();
 
     // Toggle circle - military colors
-    g.beginFill(0x000000);
-    g.drawCircle(isActive ? 45 : 15, 15, 12);
-    g.endFill();
+    g.fill({ color: 0x000000 });
+    g.circle(isActive ? 45 : 15, 15, 12);
+    g.fill();
 
     // Circle border
-    g.lineStyle(1, isActive ? 0x00ff00 : 0xff0000);
-    g.drawCircle(isActive ? 45 : 15, 15, 12);
+    g.setStrokeStyle({ width: 1, color: isActive ? 0x00ff00 : 0xff0000 });
+    g.circle(isActive ? 45 : 15, 15, 12);
+    g.stroke();
   }, []);
 
   // Handle click events using DOM events

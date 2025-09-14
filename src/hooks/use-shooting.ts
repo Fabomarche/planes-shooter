@@ -36,7 +36,7 @@ export const useShooting = (): ShootingHook => {
     playShootSound();
 
     // Get canvas bounds
-    const canvas = app.view as HTMLCanvasElement;
+    const canvas = app.canvas as HTMLCanvasElement;
     const rect = canvas.getBoundingClientRect();
     
     // Calculate click position relative to canvas

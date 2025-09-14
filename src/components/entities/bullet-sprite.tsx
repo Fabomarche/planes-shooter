@@ -101,19 +101,20 @@ export const BulletSprite = ({
     g.clear();
 
     // Draw bullet as a small circle
-    g.beginFill(GAME_CONFIG.BULLET.COLOR, 1);
-    g.drawCircle(0, 0, GAME_CONFIG.BULLET.SIZE);
-    g.endFill();
+    g.fill({ color: GAME_CONFIG.BULLET.COLOR, alpha: 1 });
+    g.circle(0, 0, GAME_CONFIG.BULLET.SIZE);
+    g.fill();
 
     // Add a small glow effect
-    g.beginFill(GAME_CONFIG.BULLET.COLOR, 0.3);
-    g.drawCircle(0, 0, GAME_CONFIG.BULLET.SIZE * 1.5);
-    g.endFill();
+    g.fill({ color: GAME_CONFIG.BULLET.COLOR, alpha: 0.3 });
+    g.circle(0, 0, GAME_CONFIG.BULLET.SIZE * 1.5);
+    g.fill();
 
     // Draw collision debug circle if enabled
     if (GAME_CONFIG.DEBUG.SHOW_COLLISION_BOXES) {
-      g.lineStyle(1, GAME_CONFIG.DEBUG.COLLISION_BOX_COLOR, 1);
-      g.drawCircle(0, 0, GAME_CONFIG.BULLET.SIZE);
+      g.setStrokeStyle({ width: 1, color: GAME_CONFIG.DEBUG.COLLISION_BOX_COLOR, alpha: 1 });
+      g.circle(0, 0, GAME_CONFIG.BULLET.SIZE);
+      g.stroke();
     }
   };
 

@@ -41,19 +41,22 @@ export const BulletCounter = ({
 
     // Create background rectangle (wider to accommodate both counters)
     const background = new Graphics();
-    background.beginFill(0x000000, 0.7); // Dark background with transparency
-    background.drawRoundedRect(0, 0, 350, 50, 8); // Wider rounded rectangle
-    background.endFill();
+    background.fill({ color: 0x000000, alpha: 0.7 }); // Dark background with transparency
+    background.roundRect(0, 0, 350, 50, 8); // Wider rounded rectangle
+    background.fill();
     backgroundRef.current = background;
     container.addChild(background);
 
     // Create bullets text
-    const bulletsText = new Text(`BULLETS: ${bulletsRemaining}`, {
-      fontFamily: "Courier New, monospace",
-      fontSize: 18,
-      fontWeight: "bold",
-      fill: canShoot ? "#00ff00" : "#ff0000",
-      stroke: { color: "#000000", width: 1 },
+    const bulletsText = new Text({
+      text: `BULLETS: ${bulletsRemaining}`,
+      style: {
+        fontFamily: "Courier New, monospace",
+        fontSize: 18,
+        fontWeight: "bold",
+        fill: canShoot ? "#00ff00" : "#ff0000",
+        stroke: { color: "#000000", width: 1 },
+      },
     });
     bulletsText.x = 15;
     bulletsText.y = 15;
@@ -77,12 +80,15 @@ export const BulletCounter = ({
     container.addChild(explosionSprite);
 
     // Create planes destroyed text
-    const planesText = new Text(`${planesDestroyed}`, {
-      fontFamily: "Courier New, monospace",
-      fontSize: 22,
-      fontWeight: "bold",
-      fill: "#ffff00", // Yellow color for planes count
-      stroke: { color: "#000000", width: 1 },
+    const planesText = new Text({
+      text: `${planesDestroyed}`,
+      style: {
+        fontFamily: "Courier New, monospace",
+        fontSize: 22,
+        fontWeight: "bold",
+        fill: "#ffff00", // Yellow color for planes count
+        stroke: { color: "#000000", width: 1 },
+      },
     });
     planesText.x = 240;
     planesText.y = 15;

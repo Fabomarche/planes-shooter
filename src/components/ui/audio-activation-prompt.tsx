@@ -21,17 +21,19 @@ export const AudioActivationPrompt: React.FC<AudioActivationPromptProps> = ({
       g.clear();
 
       // Semi-transparent background
-      g.beginFill(0x000000, 0.8);
-      g.drawRoundedRect(0, 0, width, height, 8);
-      g.endFill();
+      g.fill({ color: 0x000000, alpha: 0.8 });
+      g.roundRect(0, 0, width, height, 8);
+      g.fill();
 
       // Border
-      g.lineStyle(3, 0x00ff00);
-      g.drawRoundedRect(0, 0, width, height, 8);
+      g.setStrokeStyle({ width: 3, color: 0x00ff00 });
+      g.roundRect(0, 0, width, height, 8);
+      g.stroke();
 
       // Inner border
-      g.lineStyle(1, 0x004400);
-      g.drawRoundedRect(2, 2, width - 4, height - 4, 6);
+      g.setStrokeStyle({ width: 1, color: 0x004400 });
+      g.roundRect(2, 2, width - 4, height - 4, 6);
+      g.stroke();
     },
     [width, height],
   );
