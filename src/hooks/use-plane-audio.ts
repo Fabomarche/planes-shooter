@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect } from "react";
+import { useAudioSettings } from '../contexts/audio-context';
 
 interface PlaneAudioHook {
   playPlaneSound: () => void;
@@ -15,6 +16,7 @@ interface PlaneAudioHook {
  * - Implements fade out when plane exits screen
  */
 export const usePlaneAudio = (): PlaneAudioHook => {
+  const { audioSettings } = useAudioSettings();
   const planeSoundRef = useRef<HTMLAudioElement | null>(null);
   const volumeRef = useRef<number>(0.1); // Default volume 10% (reducido)
   const fadeOutIntervalRef = useRef<number | null>(null);
@@ -32,6 +34,8 @@ export const usePlaneAudio = (): PlaneAudioHook => {
 
   // Play plane engine sound
   const playPlaneSound = useCallback(() => {
+    if (audioSettings.isFxMuted) return;
+    
     initializePlaneSound();
 
     if (planeSoundRef.current && !isPlayingRef.current) {
@@ -42,7 +46,7 @@ export const usePlaneAudio = (): PlaneAudioHook => {
       });
       isPlayingRef.current = true;
     }
-  }, [initializePlaneSound]);
+  }, [initializePlaneSound, audioSettings.isFxMuted]);
 
   // Stop plane sound immediately (for explosions)
   const stopPlaneSound = useCallback(() => {

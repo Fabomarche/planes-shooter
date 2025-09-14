@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
+import { useAudioSettings } from '../contexts/audio-context';
 
 interface BackgroundMusicHook {
   playBackgroundMusic: () => void;
@@ -16,6 +17,7 @@ interface BackgroundMusicHook {
  * - Manages seamless transitions between loops
  */
 export const useBackgroundMusic = (): BackgroundMusicHook => {
+  const { audioSettings } = useAudioSettings();
   const loop1Ref = useRef<HTMLAudioElement | null>(null);
   const loop2Ref = useRef<HTMLAudioElement | null>(null);
   const volumeRef = useRef<number>(0.3); // Default volume 30%
@@ -81,6 +83,8 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
 
   // Start background music
   const playBackgroundMusic = useCallback(() => {
+    if (audioSettings.isMusicMuted) return;
+    
     initializeAudio();
     setupEventListeners();
     
@@ -100,7 +104,7 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
         });
       }
     }
-  }, [initializeAudio, setupEventListeners]);
+  }, [initializeAudio, setupEventListeners, audioSettings.isMusicMuted]);
 
   // Stop background music
   const stopBackgroundMusic = useCallback(() => {
@@ -139,6 +143,8 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
 
   // Resume background music
   const resumeBackgroundMusic = useCallback(() => {
+    if (audioSettings.isMusicMuted) return;
+    
     if (isPlayingRef.current && isPausedRef.current) {
       isPausedRef.current = false;
       
@@ -150,7 +156,7 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
         });
       }
     }
-  }, []);
+  }, [audioSettings.isMusicMuted]);
 
   // Set volume for background music
   const setVolume = useCallback((volume: number) => {

@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { useAudioSettings } from '../contexts/audio-context';
 
 interface SoundHook {
   playShootSound: () => void;
@@ -14,6 +15,7 @@ interface SoundHook {
  * - Optimized for performance with audio caching
  */
 export const useSound = (): SoundHook => {
+  const { audioSettings } = useAudioSettings();
   const shootSoundRef = useRef<HTMLAudioElement | null>(null);
   const explosion2SoundRef = useRef<HTMLAudioElement | null>(null);
   const explosion3SoundRef = useRef<HTMLAudioElement | null>(null);
@@ -42,6 +44,8 @@ export const useSound = (): SoundHook => {
 
   // Play shoot sound
   const playShootSound = useCallback(() => {
+    if (audioSettings.isFxMuted) return;
+    
     initializeSounds();
     
     if (shootSoundRef.current) {
@@ -51,10 +55,12 @@ export const useSound = (): SoundHook => {
         console.warn('Could not play shoot sound:', error);
       });
     }
-  }, [initializeSounds]);
+  }, [initializeSounds, audioSettings.isFxMuted]);
 
   // Play explosion-2 sound
   const playExplosion2Sound = useCallback(() => {
+    if (audioSettings.isFxMuted) return;
+    
     initializeSounds();
     
     if (explosion2SoundRef.current) {
@@ -63,10 +69,12 @@ export const useSound = (): SoundHook => {
         console.warn('Could not play explosion-2 sound:', error);
       });
     }
-  }, [initializeSounds]);
+  }, [initializeSounds, audioSettings.isFxMuted]);
 
   // Play explosion-3 sound
   const playExplosion3Sound = useCallback(() => {
+    if (audioSettings.isFxMuted) return;
+    
     initializeSounds();
     
     if (explosion3SoundRef.current) {
@@ -75,7 +83,7 @@ export const useSound = (): SoundHook => {
         console.warn('Could not play explosion-3 sound:', error);
       });
     }
-  }, [initializeSounds]);
+  }, [initializeSounds, audioSettings.isFxMuted]);
 
   // Set volume for all sounds
   const setVolume = useCallback((volume: number) => {
