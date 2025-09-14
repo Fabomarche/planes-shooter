@@ -109,7 +109,10 @@ export const GameScene = () => {
 
       {/* Plane - only show if alive */}
       {planeState.isAlive && (
-        <PlaneSprite onPositionUpdate={handlePlanePositionUpdate} />
+        <PlaneSprite 
+          onPositionUpdate={handlePlanePositionUpdate} 
+          isDestroyed={planeState.isDestroyed}
+        />
       )}
 
       {/* Debug collision box for plane */}

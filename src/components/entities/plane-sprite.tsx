@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { useApplication, useTick } from "@pixi/react";
 import { Sprite } from "pixi.js";
 import { useAsset } from "../../hooks/use-asset";
+import { usePlaneAudio } from "../../hooks/use-plane-audio";
 
 /**
  * PlaneSprite component following React + Pixi.js best practices
@@ -11,18 +12,34 @@ import { useAsset } from "../../hooks/use-asset";
  */
 interface PlaneSpriteProps {
   onPositionUpdate?: (x: number, y: number, scale: number) => void;
+  isDestroyed?: boolean;
 }
 
-export const PlaneSprite = ({ onPositionUpdate }: PlaneSpriteProps) => {
+export const PlaneSprite = ({ onPositionUpdate, isDestroyed = false }: PlaneSpriteProps) => {
   const { app } = useApplication();
   const spriteRef = useRef<Sprite>(null);
   const [animationStartTime, setAnimationStartTime] = useState<number>(0);
   const [startY, setStartY] = useState<number>(0);
   const [endY, setEndY] = useState<number>(0);
   const [currentRotation, setCurrentRotation] = useState<number>(0.5);
+  const [hasStartedAudio, setHasStartedAudio] = useState<boolean>(false);
 
   // Use custom hook for asset loading with proper error handling
   const { texture, isLoading, error } = useAsset("PLANE");
+  
+  // Use custom hook for plane audio management
+  const { playPlaneSound, stopPlaneSound, fadeOutPlaneSound, resetPlaneSound } = usePlaneAudio();
+
+  // Handle audio when plane is destroyed
+  useEffect(() => {
+    if (isDestroyed) {
+      stopPlaneSound();
+    } else {
+      // When plane is alive again (after reset), ensure audio state is reset
+      setHasStartedAudio(false);
+      resetPlaneSound();
+    }
+  }, [isDestroyed, stopPlaneSound, resetPlaneSound]);
 
   // Reset animation every 4 seconds with random start and end Y positions
   useEffect(() => {
@@ -42,6 +59,10 @@ export const PlaneSprite = ({ onPositionUpdate }: PlaneSpriteProps) => {
       const deltaX = app.screen.width + 200; // Total horizontal distance
       const angle = Math.atan2(deltaY, deltaX);
       setCurrentRotation(0.5 + angle); // Add angle to baseline rotation
+      
+      // Reset audio state for new plane cycle
+      setHasStartedAudio(false);
+      resetPlaneSound(); // Completely reset audio for new plane
     };
 
     const interval = setInterval(() => {
@@ -78,6 +99,21 @@ export const PlaneSprite = ({ onPositionUpdate }: PlaneSpriteProps) => {
     spriteRef.current.x = currentX;
     spriteRef.current.y = currentY;
     spriteRef.current.rotation = currentRotation;
+
+    // Audio management
+    if (!isDestroyed) {
+      // Start audio when plane enters screen (x > 0)
+      if (currentX > 0 && !hasStartedAudio) {
+        playPlaneSound();
+        setHasStartedAudio(true);
+      }
+      
+      // Fade out when plane is about to exit screen (x > screen width - 200)
+      if (currentX > app.screen.width - 200 && hasStartedAudio) {
+        fadeOutPlaneSound();
+        setHasStartedAudio(false);
+      }
+    }
 
     // Notify parent component of current position
     if (onPositionUpdate) {
